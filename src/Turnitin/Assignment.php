@@ -60,7 +60,7 @@ class Assignment {
         return $documents;
     }
 
-    public function upload($path,$author){
+    public function upload($path,$author_first,$author_last ="_prototype"){
         if(!$this->referer)
             $this->allDocuments();
 
@@ -86,11 +86,11 @@ class Assignment {
                 ],
                 [
                     'name'      => 'author_first',
-                    'contents'  => $author,
+                    'contents'  => $author_first,
                 ],
                 [
                     'name'      => 'author_last',
-                    'contents'  => '_Prototype',
+                    'contents'  => $author_last,
                 ],
                 [
                     'name'      => 'title',
