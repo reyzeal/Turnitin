@@ -51,7 +51,7 @@ class Assignment {
                 $author[1][$i],
                 $title[1][$i],
                 $sim,
-                $download[1][$i],
+                isset($download[1][$i])?$download[1][$i]:null,
                 $date[1][$i],
             ]);
             $i++;
