@@ -159,7 +159,33 @@ class Assignment {
         $jsonConfirm = json_decode($response->getBody());
         return $jsonConfirm;
     }
-
+    private function minify($buffer){
+        if(strpos($buffer,'<pre>') !== false)
+        {
+            $replace = array(
+                '/<!--[^\[](.*?)[^\]]-->/s' => '',
+                "/<\?php/"                  => '<?php ',
+                "/\r/"                      => '',
+                "/>\n</"                    => '><',
+                "/>\s+\n</"    				=> '><',
+                "/>\n\s+</"					=> '><',
+            );
+        }
+        else
+        {
+            $replace = array(
+                '/<!--[^\[](.*?)[^\]]-->/s' => '',
+                "/<\?php/"                  => '<?php ',
+                "/\n([\S])/"                => '$1',
+                "/\r/"                      => '',
+                "/\n/"                      => '',
+                "/\t/"                      => '',
+                "/ +/"                      => ' ',
+            );
+        }
+        $buffer = preg_replace(array_keys($replace), array_values($replace), $buffer);
+        return $buffer;
+    }
     public function getReport($oid){
         $client = new Client([
             'cookies' => $this->session->getCookies(),
@@ -198,6 +224,7 @@ class Assignment {
             'similarity' => intval($similarity)/100,
             'similarity_detail' => $similarity_detail,
             'detail' => base64_encode((string)$data),
+            'detail_minify' => base64_encode($this->minify((string)$data)),
         ];
     }
 }
