@@ -204,6 +204,7 @@ class Assignment {
                 'session-id' => $this->session->getId()
             ]
         ]);
+
         $data = $response->getBody();
         preg_match_all('/similarity_percent">(\d+)%<\/div>/',$data,$similarity);
         preg_match_all('/<dd>([^<]+)%/',$data,$similarity_detail);
@@ -220,11 +221,18 @@ class Assignment {
         $similarity_detail['internet-source'] = intval($detail[0])/100;
         $similarity_detail['publications'] = intval($detail[1])/100;
         $similarity_detail['student-papers'] = intval($detail[2])/100;
+        $response = $client->request('GET',"https://www.turnitin.com/newreport_printview.asp?d=1&lang=en_us",[
+            'cookies' => $this->session->getCookies(),
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->session->getId()
+            ]
+        ]);
+        $data2 = $response->getBody();
         return [
             'similarity' => intval($similarity)/100,
             'similarity_detail' => $similarity_detail,
-            'detail' => base64_encode((string)$data),
-            'detail_minify' => base64_encode($this->minify((string)$data)),
+            'detail' => base64_encode($this->minify((string)$data2)),
         ];
     }
 }
