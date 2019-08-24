@@ -22,12 +22,24 @@ class FileDocument {
     }
 
     public function report(){
-        $response = $connection->client->request('GET',"https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=$oid",[
-            'cookies' => $connection->cookiejar,
+        $client = new Client([
+            'cookies' => $this->session->getCookies(),
+        ]);
+//        $response = $client->request('GET',"https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=$this->id",[
+//            'cookies' => $this->session->getCookies(),
+//            'headers' => [
+//                'accept-encoding' => 'gzip, deflate',
+//                'session-id' => $this->session->getId()
+//            ]
+//        ]);
+        $response = $client->request('GET',"https://www.turnitin.com/newreport_classic.asp?lang=en_us&oid=$this->id&ft=1&bypass_cv=1",[
+            'cookies' => $this->session->getCookies(),
             'headers' => [
                 'accept-encoding' => 'gzip, deflate',
-                'session-id' => $connection->session_id
+                'session-id' => $this->session->getId()
             ]
         ]);
+        $data = $response->getBody();
+        return $data;
     }
 }

@@ -159,4 +159,45 @@ class Assignment {
         $jsonConfirm = json_decode($response->getBody());
         return $jsonConfirm;
     }
+
+    public function getReport($oid){
+        $client = new Client([
+            'cookies' => $this->session->getCookies(),
+        ]);
+        $response = $client->request('GET',"https://ev.turnitin.com/app/carta/en_us/?lang=en_us&o=$oid",[
+            'cookies' => $this->session->getCookies(),
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->session->getId()
+            ]
+        ]);
+        $response = $client->request('GET',"https://www.turnitin.com/newreport_classic.asp?lang=en_us&oid=$oid&ft=1&bypass_cv=1",[
+            'cookies' => $this->session->getCookies(),
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->session->getId()
+            ]
+        ]);
+        $data = $response->getBody();
+        preg_match_all('/similarity_percent">(\d+)%<\/div>/',$data,$similarity);
+        preg_match_all('/<dd>([^<]+)%/',$data,$similarity_detail);
+        if(isset($similarity[1][0])) $similarity = $similarity[1][0];
+        $detail = [];
+        for($i=0;$i<3;$i++){
+            if(isset($similarity_detail[1][$i])){
+                $detail[] = $similarity_detail[1][$i];
+            }else{
+                $detail[] = null;
+            }
+        }
+        $similarity_detail = [];
+        $similarity_detail['internet-source'] = intval($detail[0])/100;
+        $similarity_detail['publications'] = intval($detail[1])/100;
+        $similarity_detail['student-papers'] = intval($detail[2])/100;
+        return [
+            'similarity' => intval($similarity)/100,
+            'similarity_detail' => $similarity_detail,
+            'detail' => base64_encode((string)$data),
+        ];
+    }
 }
