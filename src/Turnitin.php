@@ -8,7 +8,7 @@ class Turnitin{
         if(!$username){
             if(function_exists('env')){
                 $username = env('TURNITIN_USERNAME');
-                $username = env('TURNITIN_PASSWORD');
+                $password = env('TURNITIN_PASSWORD');
             }
         }
         if(!$forceToLogin){
