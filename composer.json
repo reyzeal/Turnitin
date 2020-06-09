@@ -11,7 +11,7 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "vlucas/phpdotenv": "^3.4",
+        "vlucas/phpdotenv": "^5.0",
         "league/flysystem": "^1.0"
     },
     "autoload": {
