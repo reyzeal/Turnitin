@@ -3,6 +3,9 @@ namespace reyzeal\Turnitin;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 
 class Assignment {
     public $title,$start,$end,$link,$documents;
@@ -232,7 +235,44 @@ class Assignment {
         return [
             'similarity' => intval($similarity)/100,
             'similarity_detail' => $similarity_detail,
-            'detail' => base64_encode($this->minify((string)$data2)),
+            'detail' => gzcompress((string)$data2),
         ];
+    }
+    public function getImage($oid){
+        // $onRedirect = function(
+        //     RequestInterface $request,
+        //     ResponseInterface $response,
+        //     UriInterface $uri
+        // ) {
+        //     echo 'Redirecting! ' . $request->getUri() . ' to ' . $uri . "\n";
+        // };
+        $client = new Client([
+            'cookies' => $this->session->getCookies(),
+        ]);
+        $client->get("https://www.turnitin.com/paper_frameset.asp?oid=$oid&pbd=2&ro=0", [
+            'allow_redirects' => [
+                'max'             => 10,        // allow at most 10 redirects.
+                'strict'          => true,      // use "strict" RFC compliant redirects.
+                'referer'         => true,      // add a Referer header
+                'protocols'       => ['https'], // only allow https URLs
+                // 'on_redirect'     => $onRedirect,
+                'track_redirects' => true
+            ],
+            'cookies' => $this->session->getCookies(),
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->session->getId()
+            ]
+        ]);
+        $response = $client->get("https://ev.turnitin.com/paper/$oid?lang=en_us&cv=1&output=json",[
+            'cookies' => $this->session->getCookies(),
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->session->getId()
+            ]
+        ]);
+        $data = json_decode($response->getBody(),true);
+        $r = $client->get('https://ev.turnitin.com'.$data['Paper'][0]['image_url']);
+        return $r->getBody();
     }
 }
