@@ -9,15 +9,29 @@ class Session extends SessionAdapter {
     private $username,$password,$cookies,$id,$forceToLogin;
     public $isLogin = false;
     public function __construct($username,$password,$path,$forceToLogin=false){
-        parent::__construct($path);
         $this->username=$username;
         $this->password=$password;
         $this->forceToLogin = $forceToLogin;
         $this->filename = 'session_'. md5($username.$password);
+        $this->isLogin = $this->check();
+    }
+    private function check(){
+        $client = new Client([
+            'cookies' => $this->getCookies(),
+        ]);
+        $response = $client->head('https://www.turnitin.com/t_home.asp',[
+            'allow_redirects'=>false,
+            'headers' => [
+                'accept-encoding' => 'gzip, deflate',
+                'session-id' => $this->getId()
+            ]
+        ]);
+        $html = $response->getStatusCode();
+        return $html == 200;
     }
 
     public function login(){
-        if(!$this->forceToLogin){
+        if(!$this->forceToLogin && $this->check()){
             $data = $this->retrieve();
             $this->cookies = $data['cookies'];
             $this->id = $data['session_id'];
