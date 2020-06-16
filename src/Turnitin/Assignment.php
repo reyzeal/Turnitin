@@ -63,7 +63,8 @@ class Assignment {
         return $documents;
     }
 
-    public function upload($path,$author_first,$author_last ="_prototype"){
+    public function upload($path,Array $data){
+
         if(!$this->referer)
             $this->allDocuments();
 
@@ -89,15 +90,15 @@ class Assignment {
                 ],
                 [
                     'name'      => 'author_first',
-                    'contents'  => $author_first,
+                    'contents'  => $data['author_first'],
                 ],
                 [
                     'name'      => 'author_last',
-                    'contents'  => $author_last,
+                    'contents'  => $data['author_last'],
                 ],
                 [
                     'name'      => 'title',
-                    'contents'  => md5(date('d-m-Y H:i:s').''.rand(0,100)),
+                    'contents'  => $data['title'],
                 ],
                 [
                     'name'      => 'userfile',
