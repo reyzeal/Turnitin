@@ -135,10 +135,11 @@ class Assignment {
                 ],
             ]
         ]);
+        $uuid = json_decode($response->getBody())->uuid;
         // wis ngisi form langsung upload dan dicek metadatane
         $status = 0;
         while(!$status){
-            $response = $client->request('GET',"https://www.turnitin.com/panda/get_submission_metadata.asp?session-id=$session_id&lang=en_us&skip_ready_check=1",[
+            $response = $client->request('GET',"https://www.turnitin.com/panda/get_submission_metadata.asp?session-id=$session_id&lang=en_us&skip_ready_check=0&uuid=$uuid",[
                 'cookies' => $this->session->getCookies(),
                 'headers' => [
                     'accept-encoding' => 'gzip, deflate',
@@ -150,7 +151,7 @@ class Assignment {
             sleep(1);
         }
         // acc
-        $response = $client->request('POST',"https://www.turnitin.com/submit_confirm.asp?lang=en_us&session-id=$session_id&data-state=confirm",[
+        $response = $client->request('POST',"https://www.turnitin.com/submit_confirm.asp?lang=en_us&session-id=$session_id&data-state=confirm&uuid=$uuid",[
             'cookies' => $this->session->getCookies(),
             'headers' => [
                 'accept-encoding' => 'gzip, deflate',
