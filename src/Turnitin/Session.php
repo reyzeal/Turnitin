@@ -64,7 +64,6 @@ class Session extends SessionAdapter {
             'cookies' => $cookiejar,
             'session_id' => $session_id
         ];
-        // echo $session_id;
         $this->save($data);
         $this->isLogin = true;
         return $data;

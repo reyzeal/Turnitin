@@ -30,7 +30,6 @@ class ClassRoom extends Turnitin {
             ]
         ]);
         $html = (string)$response->getBody();
-        // \file_put_contents(__DIR__."/../../test/uji.html",$html);
         preg_match_all('/t_class_home.asp\?([^"]+)/',$html,$link);
         preg_match_all('/class_id">(\d+)/',$html,$classId);
         preg_match_all('/class_name"><a[^>]+>([^<]+)/',$html,$className);
@@ -60,7 +59,6 @@ class ClassRoom extends Turnitin {
     public function room($classIndex = 0){
         if(!$this->classList)
             $this->allRooms();
-        // echo json_encode($this->session->getCookies(), JSON_PRETTY_PRINT);
         return $this->classList[$classIndex];
     }
 }
