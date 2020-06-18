@@ -65,15 +65,9 @@ class Session extends SessionAdapter {
         return $data;
     }
     public function getCookies(){
-        if(!$this->isLogin){
-            $this->login();
-        }
         return $this->cookies;
     }
     public function getId(){
-        if(!$this->isLogin){
-            $this->login();
-        }
         return $this->id;
     }
 }
