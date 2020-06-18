@@ -9,6 +9,8 @@ class SessionAdapter{
     protected function retrieve(){
         if(is_file($this->filename)){
             return unserialize(file_get_contents($this->filename));
+        }else{
+            return false;
         }
     }
 }

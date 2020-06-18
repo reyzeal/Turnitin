@@ -13,7 +13,9 @@ class Session extends SessionAdapter {
         $this->password=$password;
         $this->forceToLogin = $forceToLogin;
         $this->filename = 'session_'. md5($username.$password);
-        $this->isLogin = $this->check();
+        $this->isLogin = null;
+        $check = $this->check();
+        if(!$check) $this->login();
     }
     private function check(){
         $client = new Client([
@@ -31,12 +33,14 @@ class Session extends SessionAdapter {
     }
 
     public function login(){
-        if(!$this->forceToLogin && $this->check()){
+        if(!$this->forceToLogin){
             $data = $this->retrieve();
-            $this->cookies = $data['cookies'];
-            $this->id = $data['session_id'];
-            $this->isLogin = true;
-            return $data;
+            if($data){
+                $this->cookies = $data['cookies'];
+                $this->id = $data['session_id'];
+                $this->isLogin = $this->check();
+                if($this->isLogin) return $data;
+            }
         }
 
         $cookiejar = new CookieJar();
@@ -60,6 +64,7 @@ class Session extends SessionAdapter {
             'cookies' => $cookiejar,
             'session_id' => $session_id
         ];
+        // echo $session_id;
         $this->save($data);
         $this->isLogin = true;
         return $data;

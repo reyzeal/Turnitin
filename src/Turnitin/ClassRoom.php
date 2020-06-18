@@ -6,7 +6,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use reyzeal\Turnitin;
 
 class ClassRoom extends Turnitin {
-    protected $classList,$session;
+    protected $classList=null,$session;
     public $BYINDEX = 1;
     public $BYID = 2;
     public $BYNAME = 3;
@@ -29,7 +29,8 @@ class ClassRoom extends Turnitin {
                 'session-id' => $this->session->getId()
             ]
         ]);
-        $html = $response->getBody();
+        $html = (string)$response->getBody();
+        \file_put_contents(__DIR__."/../../test/uji.html",$html);
         preg_match_all('/t_class_home.asp\?([^"]+)/',$html,$link);
         preg_match_all('/class_id">(\d+)/',$html,$classId);
         preg_match_all('/class_name"><a[^>]+>([^<]+)/',$html,$className);
@@ -59,6 +60,7 @@ class ClassRoom extends Turnitin {
     public function room($classIndex = 0){
         if(!$this->classList)
             $this->allRooms();
+        // echo json_encode($this->session->getCookies(), JSON_PRETTY_PRINT);
         return $this->classList[$classIndex];
     }
 }
