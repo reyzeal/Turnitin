@@ -30,7 +30,7 @@ class ClassRoom extends Turnitin {
             ]
         ]);
         $html = (string)$response->getBody();
-        \file_put_contents(__DIR__."/../../test/uji.html",$html);
+        // \file_put_contents(__DIR__."/../../test/uji.html",$html);
         preg_match_all('/t_class_home.asp\?([^"]+)/',$html,$link);
         preg_match_all('/class_id">(\d+)/',$html,$classId);
         preg_match_all('/class_name"><a[^>]+>([^<]+)/',$html,$className);
